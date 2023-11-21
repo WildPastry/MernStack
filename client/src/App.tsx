@@ -5,27 +5,25 @@ import "./App.css";
 
 function App() {
   const [count, setCount] = useState(0);
-  const [records, setRecords] = useState([]);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
-    async function getRecords() {
-      const response = await fetch(`http://localhost:5000/record/`);
-
-      if (!response.ok) {
-        const message = `An error occurred: ${response.statusText}`;
-        window.alert(message);
-        return;
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/data");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        setData(data);
+        console.log(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
-
-      const records = await response.json();
-      setRecords(records);
-      console.log('records', records);
-    }
-
-    getRecords();
-
-    return;
-  }, [records.length]);
+    };
+    
+    fetchData();
+  }, []);
 
   return (
     <>
@@ -42,13 +40,13 @@ function App() {
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+        <div>
+        {data ? (
+          <p>We have data...
+          </p>
+        ) : null}
+        </div>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   );
 }

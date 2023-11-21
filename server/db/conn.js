@@ -1,22 +1,21 @@
 const { MongoClient } = require("mongodb");
-const Db = process.env.ATLAS_URI;
-const client = new MongoClient(Db);
+const ATLAS_URI = process.env.ATLAS_URI;
+const client = new MongoClient(ATLAS_URI);
 
-let _db;
+var _db;
 
 module.exports = {
-  connectToServer: async function (callback) {
-
-    try {
-      await client.connect();
-    } catch (e) {
-      console.error(e);
-    }
-
-    _db = client.db("MongoDB");
-
-    return (_db === undefined ? false : true);
+  connectToServer: function (callback) {
+    client.connect(function (err, db) {
+      // Verify we got a good "db" object
+      if (db) {
+        _db = db.db("sample_guides");
+        console.log("Successfully connected to MongoDB.");
+      }
+      return callback(err);
+    });
   },
+
   getDb: function () {
     return _db;
   },
